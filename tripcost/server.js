@@ -1,9 +1,11 @@
 // Create a server.js file now, where we’ll store our API code, and start requiring Express and MongoDB:
 const express = require('express')
-const mongo = require('mongo').MongoClient
+const mongo = require('mongodb').MongoClient
 
 // Initialize the Express app:
 const app = express()
+
+const url = 'mongodb://localhost:27017' //because 27017 is the default port, this is the mongodb server url
 
 // add the stubs for the API endpoints we support:
 app.post('trip', (req, res) => {
@@ -17,3 +19,16 @@ app.get('expenses', (req, res) => {
 
 // use the listen() method on app to start the server
 app.listen(3000, () => console.log('Server Ready'))
+
+
+let db,trips,expenses 
+
+//connecting to the database
+mongo.connect(url,(err,client)=>{if(err){
+    console.error(err)
+    return
+}
+db = client.db('tripcost')
+trips =db.collection('trips')
+expenses=db.collection('expenses')
+})
