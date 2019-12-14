@@ -7,6 +7,17 @@ const app = express();
 
 const url = "mongodb://localhost:27017"; // because 27017 is the default port, this is the mongodb server url
 
+// connecting to the database
+mongo.connect(url, (err, client) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  db = client.db("tripcost");
+  trips = db.collection("trips");
+  expenses = db.collection("expenses");
+});
+
 // add the stubs for the API endpoints we support:
 app.use(express.json());
 
@@ -38,6 +49,7 @@ app.get("trips", (req, res) => {
   });
 });
 app.post("expense", (req, res) => {
+  //Every trip has an associated _id property which is added by MongoDB directly when it’s added
   expenses.insertOne(
     {
       trip: req.body.trip,
@@ -56,20 +68,18 @@ app.post("expense", (req, res) => {
     }
   );
 });
-app.get("expenses", (req, res) => {});
+app.get("expenses", (req, res) => {
+  expenses.find({ trip: req.body.trip }).toArray((err, items) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ err: err });
+      return;
+    }
+    res.status(200).json({ trips: items });
+  });
+});
 
 // use the listen() method on app to start the server
 app.listen(3000, () => console.log("Server Ready"));
 
 let db, trips, expenses;
-
-// connecting to the database
-mongo.connect(url, (err, client) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  db = client.db("tripcost");
-  trips = db.collection("trips");
-  expenses = db.collection("expenses");
-});
