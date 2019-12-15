@@ -1,3 +1,5 @@
+//this is a rest API
+
 // Create a server.js file now, where we’ll store our API code, and start requiring Express and MongoDB:
 const express = require("express");
 const mongo = require("mongodb").MongoClient;
